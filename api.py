@@ -3,6 +3,7 @@ from flask_cors import CORS
 import pickle
 import re
 import json
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Load the saved model and vectorizer
@@ -15,9 +16,7 @@ with open('tfidf_vectorizer.pkl', 'rb') as vectorizer_file:
 # Load stopwords
 with open('stopwords.json', 'r', encoding='utf-8') as file:
     stopwords_data = json.load(file)
-    stopwords = stopwords_data if isinstance(
-        stopwords_data, list) else stopwords_data['stopwords']
-
+    stopwords = stopwords_data if isinstance(stopwords_data, list) else stopwords_data['stopwords']
 
 def preprocess_text(text, stopwords):
     text = re.sub(r'\W', ' ', text)
@@ -25,10 +24,8 @@ def preprocess_text(text, stopwords):
     text = ' '.join([word for word in text.split() if word not in stopwords])
     return text
 
-
 app = Flask(__name__)
 CORS(app)
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -39,6 +36,6 @@ def predict():
     prediction = model.predict(news_vector)
     return jsonify({'prediction': 'TRUE' if prediction[0] == 1 else 'FAKE'})
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

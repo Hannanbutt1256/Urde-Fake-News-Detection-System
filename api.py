@@ -3,7 +3,7 @@ from flask_cors import CORS
 import pickle
 import re
 import json
-
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Load the saved model and vectorizer
 with open('ensemble_model.pkl', 'rb') as model_file:
